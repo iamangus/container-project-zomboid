@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2 # may be actions/checkout@v2 now
+    - name: Login to github docker Registry
+      run: docker login docker.pkg.github.com -u iamangus -p ${{ secrets.GITHUB_TOKEN }}
+    - name: Set Date based var for use in tag
+      id: vars
+      run: echo ::set-output name=tag::$(echo $(date +%s))
+    - name: Build the tagged Docker image
+      run: docker build . --file Dockerfile --tag docker.pkg.github.com/iamangus/container-project-zomboid/container-project-zomboid:latest
+    - name: Push the latest Docker image
+      run: docker push docker.pkg.github.com/iamangus/container-project-zomboid/container-project-zomboid:latest
+    - name: retag and push
+      run: docker tag docker.pkg.github.com/iamangus/container-project-zomboid/container-project-zomboid:latest docker.pkg.github.com/iamangus/container-project-zomboid/container-project-zomboid:${{steps.vars.outputs.tag}}
+    - name: Push the tagged Docker image
+      run: docker push docker.pkg.github.com/iamangus/container-project-zomboid/container-project-zomboid:${{steps.vars.outputs.tag}}
