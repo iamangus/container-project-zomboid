@@ -12,8 +12,8 @@ export LD_LIBRARY_PATH="~/Zomboid/pzserver/jre64/lib:${LD_LIBRARY_PATH}"
 # Test if servertest.ini exists, if not then we need to start the server with a temp admin pass.
 if [ -f /home/steam/Zomboid/Server/servertest.ini ]; then
     echo "servertest.ini exists."
-    bash ~/Zomboid/pzserver/start-server.sh
+    bash ~/Zomboid/pzserver/start-server.sh -Xmx12g -Xms12g
 else
     echo "servertest.ini does not exist."
-    bash ~/Zomboid/pzserver/start-server.sh -adminpassword "temp"
+    bash ~/Zomboid/pzserver/start-server.sh -Xmx12g -Xms12g -adminpassword "temp"
 fi
