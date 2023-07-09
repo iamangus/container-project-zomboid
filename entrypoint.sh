@@ -3,22 +3,17 @@
 # I mount ~/Zomboid to a pvc to persist both the steam server files as well as the world and save files.
 mkdir -p ~/Zomboid/pzserver
 
-#test if servertest.ini exists, if not then we need to set a temp admin pass.
-#if [ -e /home/steam/Zomboid/Server/servertest1.ini ]; then forcepass="true"; else forcepass="false"; fi
-
 steamcmd +force_install_dir ~/Zomboid/pzserver +login anonymous +app_update 380870 +quit
 
 export LD_LIBRARY_PATH="~/Zomboid/pzserver/jre64/lib:${LD_LIBRARY_PATH}"
 
-#test if servertest.ini exists, if not then we need to set a temp admin pass.
-if [ -f /home/steam/Zomboid/Server/servertest1.ini ]; then
+# The server requires an admin password to run. This would normally be read from servertest.ini.
+# On first start the file may not be present leading to the pz process terminating.
+# Test if servertest.ini exists, if not then we need to start the server with a temp admin pass.
+if [ -f /home/steam/Zomboid/Server/servertest.ini ]; then
+    echo "servertest.ini exists."
     bash ~/Zomboid/pzserver/start-server.sh
 else
+    echo "servertest.ini does not exist."
     bash ~/Zomboid/pzserver/start-server.sh -adminpassword "temp"
 fi
-
-#if [ $forcepass == "true" ]; then
-#  bash ~/Zomboid/pzserver/start-server.sh -adminpassword "temp"
-#else
-#  bash ~/Zomboid/pzserver/start-server.sh
-#fi
